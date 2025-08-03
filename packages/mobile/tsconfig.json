@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@mvp/shared": ["../shared/src"],
+      "@mvp/ui": ["../ui/src"]
+    }
+  },
+  "extends": "expo/tsconfig.base"
+}
