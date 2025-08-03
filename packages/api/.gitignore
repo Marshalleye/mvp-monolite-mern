@@ -1,0 +1,24 @@
+# Ignore all node_modules in all packages
+**/node_modules/
+
+# Ignore all build outputs
+**/dist/
+**/build/
+**/*.js
+**/*.js.map
+**/*.d.ts
+**/*.d.ts.map
+**/*.tsbuildinfo
+
+# Turbo repo cache
+.turbo/
+
+# OS / Editor stuff
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local

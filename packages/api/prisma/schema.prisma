@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model - syncs with Supabase Auth
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  
+  // Supabase Auth integration
+  supabaseId String @unique @map("supabase_id")
+  
+  // Biometric authentication
+  biometricEnabled Boolean @default(false) @map("biometric_enabled")
+  publicKey        String? @map("public_key")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  payments     Payment[]
+  transactions Transaction[]
+  
+  @@map("users")
+}
+
+// Payment intents and confirmations
+model Payment {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  
+  // Payment details
+  amount      Int    // Amount in cents
+  currency    String // USD, EUR, ETH, etc.
+  type        String // STRIPE_CARD, CRYPTO_ETH, etc.
+  status      String @default("PENDING") // PENDING, SUCCEEDED, etc.
+  
+  // Provider-specific IDs
+  stripePaymentIntentId String? @map("stripe_payment_intent_id")
+  cryptoTransactionHash String? @map("crypto_transaction_hash")
+  cryptoWalletAddress   String? @map("crypto_wallet_address")
+  
+  // Metadata
+  description String?
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  
+  @@map("payments")
+}
+
+// Transaction history
+model Transaction {
+  id        String @id @default(uuid())
+  userId    String @map("user_id")
+  paymentId String? @map("payment_id")
+  
+  // Transaction details
+  type        String // PAYMENT, REFUND, etc.
+  status      String @default("PENDING") // PENDING, COMPLETED, etc.
+  amount      Int
+  currency    String
+  
+  // External references
+  externalId String? @map("external_id")
+  
+  // Metadata
+  description String?
+  failureReason String? @map("failure_reason")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  
+  @@map("transactions")
+}

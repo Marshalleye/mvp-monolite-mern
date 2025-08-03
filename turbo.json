@@ -1,0 +1,308 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.production",
+        ".env.local"
+      ],
+      "outputs": [
+        "dist/**",
+        "build/**",
+        ".next/**",
+        "!.next/cache/**"
+      ],
+      "env": [
+        "NODE_ENV",
+        "DATABASE_URL",
+        "API_URL",
+        "EXPO_PUBLIC_API_URL"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.local",
+        ".env.development"
+      ],
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "DATABASE_URL",
+        "API_URL",
+        "EXPO_PUBLIC_API_URL"
+      ]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "jest.config.*",
+        "vitest.config.*",
+        "__tests__/**/*.{js,ts,tsx}",
+        "**/*.test.{js,ts,tsx}",
+        "**/*.spec.{js,ts,tsx}"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".eslintrc.*",
+        "eslint.config.*",
+        ".eslintignore"
+      ]
+    },
+    "lint:fix": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".eslintrc.*",
+        "eslint.config.*",
+        ".eslintignore"
+      ]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "tsconfig.json",
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false,
+      "inputs": [],
+      "outputs": []
+    },
+    
+    "api:dev": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.local",
+        "prisma/schema.prisma"
+      ],
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "STRIPE_SECRET_KEY"
+      ]
+    },
+    "api:build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "api:start": {
+      "dependsOn": ["api:build"],
+      "cache": false,
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "STRIPE_SECRET_KEY"
+      ]
+    },
+
+    "db:generate": {
+      "cache": false,
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "node_modules/.prisma/**"
+      ]
+    },
+    "db:push": {
+      "cache": false,
+      "inputs": [
+        "prisma/schema.prisma"
+      ]
+    },
+    "db:migrate": {
+      "cache": false,
+      "inputs": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**"
+      ],
+      "outputs": [
+        "prisma/migrations/**"
+      ]
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:seed": {
+      "cache": false,
+      "dependsOn": ["db:generate"]
+    },
+
+    "mobile:dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "app.json",
+        "expo.json",
+        ".env",
+        ".env.local"
+      ],
+      "env": [
+        "EXPO_PUBLIC_API_URL",
+        "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY"
+      ]
+    },
+    "mobile:build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "app.json",
+        "expo.json",
+        "assets/**"
+      ],
+      "outputs": [
+        ".expo/**",
+        "dist/**"
+      ]
+    },
+    "mobile:start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "mobile:ios": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "mobile:android": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "mobile:web": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+
+    "mobile:build:development": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "mobile:build:preview": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "mobile:build:production": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "mobile:submit": {
+      "cache": false,
+      "dependsOn": ["mobile:build:production"]
+    },
+
+    "shared:build": {
+      "inputs": [
+        "$TURBO_DEFAULT$"
+      ],
+      "outputs": [
+        "dist/**",
+        "lib/**"
+      ]
+    },
+    "ui:build": {
+      "inputs": [
+        "$TURBO_DEFAULT$"
+      ],
+      "outputs": [
+        "dist/**",
+        "lib/**"
+      ]
+    },
+
+    "format": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".prettierrc*",
+        "prettier.config.*",
+        ".prettierignore"
+      ]
+    },
+    "format:check": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".prettierrc*",
+        "prettier.config.*",
+        ".prettierignore"
+      ],
+      "outputs": []
+    },
+
+    "deploy": {
+      "dependsOn": ["build", "test", "lint"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "fly.toml",
+        "Dockerfile",
+        ".dockerignore"
+      ]
+    },
+    "deploy:api": {
+      "dependsOn": ["api:build", "test", "lint"],
+      "cache": false
+    },
+    "deploy:mobile": {
+      "dependsOn": ["mobile:build:production"],
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    "pnpm-lock.yaml",
+    "turbo.json",
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.development"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "VERCEL",
+    "GITHUB_ACTIONS"
+  ]
+}
